@@ -1,0 +1,5 @@
+*.log
+dist
+gitbridge.xpi
+node_modules
+GitBridge

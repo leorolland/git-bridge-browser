@@ -1,0 +1,40 @@
+{
+  "manifest_version": 2,
+  "name": "GitBridge",
+  "short_name": "GitBridge",
+  "version": "1.0",
+  "description": "Automatically clone and jump from Github/Gitlab/Bitbucket to VSCode in one click !",
+  "icons": {
+    "16": "icons/git-bridge-logo-16.png",
+    "48": "icons/git-bridge-logo-48.png",
+    "128": "icons/git-bridge-logo-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "dist/bundles/gitbridgeify.bundle.js"
+      ]
+    }
+  ],
+  "browser_action": {
+    "default_icon": {
+      "16": "icons/git-bridge-logo-16.png",
+      "48": "icons/git-bridge-logo-48.png",
+      "128": "icons/git-bridge-logo-128.png"
+    },
+    "default_title": "Git Bridge"
+  },
+  "background": {
+    "scripts": ["dist/bundles/background.bundle.js"]
+  },
+  "options_ui": {
+    "page": "src/options/options.html"
+  },
+  "permissions": [
+    "activeTab",
+    "storage"
+  ]
+}

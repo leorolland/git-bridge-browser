@@ -1,0 +1,4 @@
+contact_links:
+  - name: Security
+    url: https://example.com/
+    about: Please report security vulnerabilities here.
