@@ -6,9 +6,7 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -29,16 +27,18 @@ jobs:
       - uses: borales/actions-yarn@v2.3.0
         with:
           cmd: build # will run `yarn build` command
-      - run: "ls"
+      - run: "ls -R"
       - name: Action For Semantic Release
         uses: cycjimmy/semantic-release-action@v2.6.0
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          branches: main
       - name: Upload binaries to release
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: gitbridge.xpi
+          file: dist/gitbridge.xpi
           asset_name: gitbridge.xpi
           tag: ${{ github.ref }}
           overwrite: true
