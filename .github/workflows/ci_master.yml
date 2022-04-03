@@ -24,15 +24,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: '14'
-      - uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: install
-      - uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: build
-      - uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: package
+      - name: Install Yarn
+        run: npm install -g yarn
+      - name: Install dependencies
+        run: yarn install
+      - name: Build
+        run: yarn build
+      - name: Package
+        run: yarn package
       - name: Action For Semantic Release
         uses: cycjimmy/semantic-release-action@v2.6.0
         env:
