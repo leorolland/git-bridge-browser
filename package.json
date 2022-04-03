@@ -10,10 +10,10 @@
     "build:safari": " xcrun safari-web-extension-converter . --app-name GitBridge --bundle-identifier io.gitbridge.GitBridge",
     "usebash": "yarn config set script-shell /bin/bash",
     "package": "yarn usebash && yarn clean:package && zip -rD --exclude='src/*.ts' gitbridge.xpi dist/bundles icons src manifest.json",
-    "clean": "rimraf dist && yarn clean:package",
-    "clean:package": "rimraf gitbridge.xpi",
-    "webpack": "webpack",
-    "watch": "webpack -w"
+    "clean": "npx rimraf dist && yarn clean:package",
+    "clean:package": "npx rimraf gitbridge.xpi",
+    "webpack": "npx webpack",
+    "watch": "npx webpack -w"
   },
   "dependencies": {
     "@types/events": "^3.0.0",
