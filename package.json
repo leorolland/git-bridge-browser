@@ -8,7 +8,8 @@
   "scripts": {
     "build": "yarn clean && npx tsc && yarn webpack",
     "build:safari": " xcrun safari-web-extension-converter . --app-name GitBridge --bundle-identifier io.gitbridge.GitBridge",
-    "package": "yarn clean:package && zip -rD --exclude='src/*.ts' gitbridge.xpi dist/bundles icons src manifest.json",
+    "usebash": "yarn config set script-shell /bin/bash",
+    "package": "yarn usebash && yarn clean:package && zip -rD --exclude='src/*.ts' gitbridge.xpi dist/bundles icons src manifest.json",
     "clean": "rimraf dist && yarn clean:package",
     "clean:package": "rimraf gitbridge.xpi",
     "webpack": "webpack",
