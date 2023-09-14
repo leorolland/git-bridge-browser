@@ -1,4 +1,6 @@
-import { browser, Storage } from "webextension-polyfill-ts";
+import * as browser from "webextension-polyfill";
+import { Storage } from "webextension-polyfill";
+
 import { EventEmitter } from "events";
 
 export interface Config {
