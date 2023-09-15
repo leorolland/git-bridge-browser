@@ -2,6 +2,7 @@ import { InjectorBase, ButtonInjector, checkIsBtnUpToDate } from "./injector";
 import { ConfigProvider } from "../config";
 import { renderGitBridgeUrl, makeOpenInPopup } from "../utils";
 import select = require("select-dom");
+import * as octicons from '@primer/octicons';
 
 namespace GitBridgeify {
 	export const NAV_BTN_ID = "gitbridge-btn-nav";
@@ -89,7 +90,7 @@ abstract class ButtonInjectorBase implements ButtonInjector {
 
         const btnGroup = actionbar.children;
         if (btnGroup && btnGroup.length > 0){
-            actionbar.insertBefore(btn, btnGroup[0]);
+            btnGroup[0].insertAdjacentElement("afterend",btn);
         } 
     }
 
@@ -103,10 +104,16 @@ abstract class ButtonInjectorBase implements ButtonInjector {
         container.id = GitBridgeify.CSS_REF_BTN_CONTAINER;
         container.className = classes;
 
+		const spanIcon = document.createElement('span');
+		spanIcon.style.marginRight = "0.4rem"
+		spanIcon.style.verticalAlign = "middle"
+        spanIcon.innerHTML = octicons['desktop-download'].toSVG({ width:14, height:14 });
+
         const a = document.createElement('a');
         a.id = GitBridgeify.NAV_BTN_ID;
         a.title = "GitBridge - Open in VSCode";
-        a.text = "🔗 VSCode"
+		a.appendChild(spanIcon);
+		a.innerHTML += "VSCode"
         a.href = url;
         if (openAsPopup) {
             makeOpenInPopup(a);

@@ -7,7 +7,6 @@
   "main": "src/gitbridgeify.js",
   "scripts": {
     "build": "yarn clean && npx tsc && yarn webpack",
-	"build:dev": "yarn build && yarn package:dev",
 	"build:safari": " xcrun safari-web-extension-converter . --app-name GitBridge --bundle-identifier io.gitbridge.GitBridge",
     "usebash": "yarn config set script-shell /bin/bash",
     "package": "yarn usebash && yarn clean:package && zip -rD --exclude='src/*.ts' gitbridge.xpi dist/bundles icons src manifest.json",
@@ -20,9 +19,11 @@
     "clean:package": "npx rimraf gitbridge.xpi",
     "webpack": "npx webpack",
     "watch": "npx webpack -w",
-	"make:chrome": "yarn install && yarn build && yarn package:chrome"
+    "make:chrome": "yarn install && yarn build && yarn package:chrome",
+    "make:dev": "yarn install && yarn build && yarn package:dev"
   },
   "dependencies": {
+    "@primer/octicons": "^19.7.0",
     "dom-loaded": "^2.0.0",
     "github-injection": "^1.0.1",
     "select-dom": "^5.1.0",
@@ -31,6 +32,7 @@
   "devDependencies": {
 	"@types/events": "^3.0.0",
 	"@types/webextension-polyfill": "^0.10.2",
+    "@types/primer__octicons": "^19.6.0",
     "copy-webpack-plugin": "^7.0.0",
     "crx3": "^1.1.3",
     "css-loader": "^5.0.2",

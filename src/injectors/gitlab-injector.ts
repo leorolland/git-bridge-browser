@@ -3,6 +3,7 @@ import * as select from 'select-dom';
 import { ConfigProvider } from '../config';
 import { ButtonInjector, InjectorBase, checkIsBtnUpToDate, rewritePeriodKeybindGitLab } from './injector';
 import { renderGitBridgeUrl, makeOpenInPopup } from '../utils';
+import * as octicons from '@primer/octicons';
 
 namespace GitBridgeify {
 	export const BTN_ID = "gitbridge-btn-nav";
@@ -94,7 +95,7 @@ class RepositoryInjector implements ButtonInjector {
         const a = document.createElement('a');
         a.id = GitBridgeify.BTN_ID;
         a.title = "GitBridge - Open in VSCode";
-        a.text = "🔗 VSCode"
+		a.innerHTML = octicons['desktop-download'].toSVG({ class:"s16 gl-icon gl-button-icon mr-2", width:16, height:16 })+"VSCode"
         a.href = url;
         a.className = "gl-button btn btn-info";
         
