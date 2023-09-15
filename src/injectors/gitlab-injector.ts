@@ -14,7 +14,9 @@ export class GitlabInjector extends InjectorBase {
 
     constructor(protected readonly configProvider: ConfigProvider) {
         super(configProvider, [
-            new RepositoryInjector()
+            new RepositoryInjector(),
+            new EmptyRepositoryInjector(),
+            new FileInjector()
         ]);
     }
 
@@ -48,21 +50,23 @@ export class GitlabInjector extends InjectorBase {
     }
 }
 
-class RepositoryInjector implements ButtonInjector {
-    static readonly PARENT_SELECTOR = ".tree-controls";
+abstract class ButtonInjectorBase implements ButtonInjector {
 
-    isApplicableToCurrentPage(): boolean {
-        const result = !!select.exists(RepositoryInjector.PARENT_SELECTOR)
-            && !!select.exists(".project-clone-holder")
-            && !select.exists('[data-qa-selector="gitbridge_button"]');
-        return result;
-    }
+    constructor(
+        protected readonly parentSelector: string,
+        protected readonly containerClasses: string = "git-clone-holder js-git-clone-holder",
+        protected readonly containerWrapper: boolean = true,
+        protected readonly insertBeforeSelector: string | undefined = undefined
+    ) { }
+
+    abstract isApplicableToCurrentPage(): boolean;
 
     inject(currentUrl: string, openAsPopup: boolean) {
-        const parent = select(RepositoryInjector.PARENT_SELECTOR);
-        if (!parent || !parent.firstElementChild) {
+        const parent = select(this.parentSelector);
+        if (!parent) {
             return;
         }
+        const before = this.insertBeforeSelector ? select(this.insertBeforeSelector, parent) : undefined;
 
         const oldBtn = document.getElementById(GitBridgeify.BTN_ID);
         if (oldBtn && !checkIsBtnUpToDate(oldBtn, currentUrl)) {
@@ -72,39 +76,89 @@ class RepositoryInjector implements ButtonInjector {
         }
 
         const btn = this.renderButton(currentUrl, openAsPopup);
-        parent.firstElementChild.appendChild(btn);
-
-        const primaryButtons = parent.firstElementChild.getElementsByClassName("btn-primary");
-        if (primaryButtons && primaryButtons.length > 1) {
-            Array.from(primaryButtons)
-                .slice(0, primaryButtons.length - 1)
-                .forEach(primaryButton => {
-                    primaryButton.classList.remove("btn-primary");
-                    Array.from(primaryButton.getElementsByTagName("svg")).forEach(svg => svg.style.fill = "currentColor")
-                });
+        if (before) {
+            parent.insertBefore(btn, before);
+        } else {
+            parent.appendChild(btn);
         }
     }
 
     protected renderButton(url: string, openAsPopup: boolean): HTMLElement {
-        const container = document.createElement('div');
-        container.className = "project-clone-holder d-none d-md-inline-block";
-
-        const container2ndLevel = document.createElement('div');
-        container2ndLevel.className = "git-clone-holder js-git-clone-holder";
 
         const a = document.createElement('a');
         a.id = GitBridgeify.BTN_ID;
         a.title = "GitBridge - Open in VSCode";
-		a.innerHTML = octicons['desktop-download'].toSVG({ class:"s16 gl-icon gl-button-icon mr-2", width:16, height:16 })+"VSCode"
+        a.innerHTML = octicons['desktop-download'].toSVG({ class: "s16 gl-icon gl-button-icon mr-2", width: 16, height: 16 }) + "VSCode"
         a.href = url;
         a.className = "gl-button btn btn-info";
         
         if (openAsPopup) {
             makeOpenInPopup(a);
         }
+        this.adjustButton(a);
 
-        container2ndLevel.appendChild(a);
-        container.appendChild(container2ndLevel);
-        return container;
+        const container = document.createElement('div');
+        container.className = this.containerClasses;
+        container.appendChild(a);
+
+        if (this.containerWrapper) {
+            const containerWrapper = document.createElement('div');
+            containerWrapper.className = "project-clone-holder d-none d-md-inline-block";
+            containerWrapper.appendChild(container);
+            this.adjustWrapper(containerWrapper);
+            return containerWrapper;
+        } else {
+            return container;
+        }
+    }
+    protected adjustButton(a: HTMLAnchorElement) {
+        // do nothing
+    }
+    protected adjustWrapper(div: HTMLDivElement) {
+        // do nothing
+    }
+}
+
+class RepositoryInjector extends ButtonInjectorBase {
+    constructor() {
+        super(".tree-controls :first-child");
+    }
+
+    isApplicableToCurrentPage(): boolean {
+        const result = !!select.exists(this.parentSelector)
+            && !!select.exists(".project-clone-holder")
+            && !select.exists('[data-qa-selector="gitbridge_button"]');
+        return result;
+    }
+}
+
+class EmptyRepositoryInjector extends ButtonInjectorBase {
+    constructor() {
+        super(".project-buttons","git-clone-holder js-git-clone-holder",true, ".float-left");
+    }
+    
+    protected adjustWrapper(div: HTMLDivElement) {
+        div.className += " gl-mb-3 gl-mr-3 float-left"
+    }
+    
+    isApplicableToCurrentPage(): boolean {
+        const result = !!select.exists(this.parentSelector)
+            && !!select.exists(".project-clone-holder");
+        return result;
+    }
+}
+
+class FileInjector extends ButtonInjectorBase {
+    constructor() {
+        super("#fileHolder > div > div.file-actions", "gl-mr-3", false, ":scope > :nth-child(2)");
+    }
+
+    protected adjustButton(a: HTMLAnchorElement) {
+        a.className = "btn btn-confirm btn-md gl-button";
+        a.style.marginRight = "1px";
+    }
+
+    isApplicableToCurrentPage(): boolean {
+        return window.location.pathname.includes("/blob/");
     }
 }
