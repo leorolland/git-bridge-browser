@@ -69,9 +69,11 @@ abstract class ButtonInjectorBase implements ButtonInjector {
         const before = this.insertBeforeSelector ? select(this.insertBeforeSelector, parent) : undefined;
 
         const oldBtn = document.getElementById(GitBridgeify.BTN_ID);
-        if (oldBtn && !checkIsBtnUpToDate(oldBtn, currentUrl)) {
+        if (oldBtn) {
             // Only add once
-            (oldBtn as HTMLAnchorElement).href = currentUrl;
+			if (!checkIsBtnUpToDate(oldBtn, currentUrl)) {
+            	(oldBtn as HTMLAnchorElement).href = currentUrl;
+			}	
             return;
         }
 
@@ -150,7 +152,7 @@ class EmptyRepositoryInjector extends ButtonInjectorBase {
 
 class FileInjector extends ButtonInjectorBase {
     constructor() {
-        super("#fileHolder > div > div.file-actions", "gl-mr-3", false, ":scope > :nth-child(2)");
+        super("#fileHolder > div > div.file-actions", "gl-mr-3", false, "[data-qa-selector='default_actions_container']");
     }
 
     protected adjustButton(a: HTMLAnchorElement) {
