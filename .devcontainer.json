@@ -1,0 +1,21 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-dockerfile
+{
+	"name": "GitPod",
+	"build": {
+		"dockerfile": ".gitpod.Dockerfile"
+	},
+	"containerEnv": {
+		"NODE_OPTIONS": "--openssl-legacy-provider",
+		"DEBUG": "true"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"eamodio.gitlens",
+				"ms-vscode.vscode-typescript-next",
+				"jeremyrajan.webpack"
+			]
+		}
+	}
+}

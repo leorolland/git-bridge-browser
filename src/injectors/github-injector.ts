@@ -3,6 +3,7 @@ import * as ghInjection from 'github-injection';
 import { ConfigProvider } from '../config';
 import { ButtonInjector, InjectorBase, checkIsBtnUpToDate, rewritePeriodKeybindGitHub } from './injector';
 import { renderGitBridgeUrl, makeOpenInPopup } from '../utils';
+import * as octicons from '@primer/octicons';
 
 namespace GitBridgeify {
 	export const NAV_BTN_ID = "gitbridge-btn-nav";
@@ -69,7 +70,6 @@ abstract class ButtonInjectorBase implements ButtonInjector {
     constructor(
         protected readonly parentSelector: string,
         protected readonly btnClasses: string,
-        protected readonly float: boolean = true,
         protected readonly asFirstChild: boolean = false
     ) {}
 
@@ -113,17 +113,21 @@ abstract class ButtonInjectorBase implements ButtonInjector {
         const primaryButtons = actionbar.getElementsByClassName("btn-primary");
         if (primaryButtons && primaryButtons.length > 1) {
             Array.from(primaryButtons)
-                .slice(0, primaryButtons.length - 1)
+                .filter(elem => elem.id != GitBridgeify.NAV_BTN_ID)
                 .forEach(primaryButton => primaryButton.classList.replace("btn-primary", "btn-secondary"));
+        }
+
+		const primaryButtonsNew = actionbar.getElementsByClassName("Button--primary");
+        if (primaryButtonsNew && primaryButtonsNew.length > 1) {
+            Array.from(primaryButtonsNew)
+				.filter(elem => elem.id != GitBridgeify.NAV_BTN_ID)
+                .forEach(primaryButton => primaryButton.classList.replace("Button--primary", "Button--secondary"));
         }
     }
 
     protected renderButton(url: string, openAsPopup: boolean): HTMLElement {
         let classes = this.btnClasses + ` ${GitBridgeify.NAV_BTN_CLASS}`;
-        if (this.float) {
-            classes = classes + ` float-right`;
-        }
-
+ 
         const container = document.createElement('div');
         container.id = GitBridgeify.CSS_REF_BTN_CONTAINER;
         container.className = classes;
@@ -131,12 +135,12 @@ abstract class ButtonInjectorBase implements ButtonInjector {
         const a = document.createElement('a');
         a.id = GitBridgeify.NAV_BTN_ID;
         a.title = "GitBridge - Open in VSCode";
-        a.text = "🔗 VSCode"
+        a.innerHTML = octicons['desktop-download'].toSVG({ class: 'mr-2', width:16, height:16 })+"VSCode"
         a.href = url;
         if (openAsPopup) {
             makeOpenInPopup(a);
         }
-        a.className = "btn btn-sm btn-primary";
+        a.className = "Button Button--secondary Button--small";
 
         this.adjustButton(a);
 
@@ -170,11 +174,12 @@ class IssueInjector extends ButtonInjectorBase {
 
 class FileInjector extends ButtonInjectorBase {
     constructor() {
-        super(".repository-content > div > div", "gitbridge-file-btn");
+        super("#repos-sticky-header > div > div:last-child > div:last-child > div.react-blob-header-edit-and-raw-actions", "ButtonGroup-sc-1gxhls1-0 cjbBGq");
     }
 
     protected adjustButton(a: HTMLAnchorElement): void {
-        a.className = "btn btn-primary";
+        a.className = "types__StyledButton-sc-ws60qy-0 iCOrao";
+		a.setAttribute("data-size","small");
     }
 
     isApplicableToCurrentPage(): boolean {
@@ -187,8 +192,8 @@ class NavigationInjector extends ButtonInjectorBase {
         super(".file-navigation", "empty-icon position-relative");
     }
 
-    protected adjustButton(a: HTMLAnchorElement): void {
-        a.className = "btn btn-primary";
+	protected adjustButton(a: HTMLAnchorElement): void {
+        a.className = "Button Button--primary Button--medium";
     }
 
     isApplicableToCurrentPage(): boolean {
@@ -198,11 +203,11 @@ class NavigationInjector extends ButtonInjectorBase {
 
 class EmptyRepositoryInjector extends ButtonInjectorBase {
     constructor() {
-        super(".repository-content", GitBridgeify.CSS_REF_NO_CONTAINER, false, true);
+        super("div.TableObject > div.TableObject-item > div.BtnGroup", "BtnGroup-parent", true);
     }
 
-    protected adjustButton(a: HTMLAnchorElement): void {
-        a.className = "btn btn-primary";
+	protected adjustButton(a: HTMLAnchorElement): void {
+        a.className = "BtnGroup-item btn btn-sm";
     }
 
     isApplicableToCurrentPage(): boolean {
