@@ -83,6 +83,15 @@ abstract class ButtonInjectorBase implements ButtonInjector {
         } else {
             parent.appendChild(btn);
         }
+
+		const primaryButtons = parent.getElementsByClassName("btn-confirm");
+        if (primaryButtons && primaryButtons.length > 0) {
+            Array.from(primaryButtons)
+                .filter(elem => elem.id != GitBridgeify.BTN_ID)
+				.forEach(primaryButton => {
+                    primaryButton.classList.remove("btn-confirm");
+                });
+        }
     }
 
     protected renderButton(url: string, openAsPopup: boolean): HTMLElement {

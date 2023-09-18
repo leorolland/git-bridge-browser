@@ -113,8 +113,15 @@ abstract class ButtonInjectorBase implements ButtonInjector {
         const primaryButtons = actionbar.getElementsByClassName("btn-primary");
         if (primaryButtons && primaryButtons.length > 1) {
             Array.from(primaryButtons)
-                .slice(0, primaryButtons.length - 1)
+                .filter(elem => elem.id != GitBridgeify.NAV_BTN_ID)
                 .forEach(primaryButton => primaryButton.classList.replace("btn-primary", "btn-secondary"));
+        }
+
+		const primaryButtonsNew = actionbar.getElementsByClassName("Button--primary");
+        if (primaryButtonsNew && primaryButtonsNew.length > 1) {
+            Array.from(primaryButtonsNew)
+				.filter(elem => elem.id != GitBridgeify.NAV_BTN_ID)
+                .forEach(primaryButton => primaryButton.classList.replace("Button--primary", "Button--secondary"));
         }
     }
 
